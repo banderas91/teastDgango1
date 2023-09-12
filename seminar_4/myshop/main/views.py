@@ -1,5 +1,6 @@
 import logging
 from django.shortcuts import render
+from flask import redirect
 from main.models import Client, Order  
 # from datetime import datetime, timedelta
 # logger = logging.getLogger('orders_filter')
@@ -24,6 +25,7 @@ from main.models import Client, Order
 
 from datetime import datetime, timedelta
 from .models import Order
+from .forms import ProductForm
 
 def client_orders(request, client_id):
 
@@ -77,5 +79,15 @@ def client_orders(request, client_id):
     'year_orders': year_orders
   }
 
+
   return render(request, 'main/client_orders.html', context)
 
+def add_product(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():  
+            product = form.save()
+            return redirect('product_detail', product.id)
+
+    form = ProductForm()
+    return render(request, 'add_product.html', {'form': form})
